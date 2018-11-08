@@ -9,12 +9,12 @@
 #include <assert.h>
 #include <bl31.h>
 #include <bl_common.h>
-#include <console.h>
 #include <cortex_a53.h>
 #include <debug.h>
 #include <errno.h>
 #include <generic_delay_timer.h>
 #include <mmio.h>
+#include <pl011.h>
 #include <plat_arm.h>
 #include <platform.h>
 #include <stddef.h>
@@ -69,14 +69,13 @@ entry_point_info_t *bl31_plat_get_next_image_ep_info(uint32_t type)
 void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
 				u_register_t arg2, u_register_t arg3)
 {
+	static console_pl011_t console;
 	void *from_bl2;
 
 	from_bl2 = (void *) arg0;
 
-	console_init(PL011_UART0_BASE, PL011_UART0_CLK_IN_HZ, PL011_BAUDRATE);
-
-	/* Init console for crash report */
-	plat_crash_console_init();
+	console_pl011_register(PL011_UART0_BASE, PL011_UART0_CLK_IN_HZ,
+			       PL011_BAUDRATE, &console);
 
 	/*
 	 * Check params passed from BL2 should not be NULL,
