@@ -10,8 +10,6 @@
 
 	.globl	plat_my_core_pos
 	.globl	platform_mem_init
-	.globl	plat_crash_console_init
-	.globl	plat_crash_console_putc
 	.globl	plat_report_exception
 	.globl	plat_reset_handler
 
@@ -33,32 +31,6 @@ endfunc plat_my_core_pos
 func platform_mem_init
 	ret
 endfunc platform_mem_init
-
-	/* ---------------------------------------------
-	 * int plat_crash_console_init(void)
-	 * Function to initialize the crash console
-	 * without a C Runtime to print crash report.
-	 * Clobber list : x0, x1, x2
-	 * ---------------------------------------------
-	 */
-func plat_crash_console_init
-	mov_imm	x0, CRASH_CONSOLE_BASE
-	mov_imm	x1, PL011_UART_CLK_IN_HZ
-	mov_imm	x2, PL011_BAUDRATE
-	b	console_core_init
-endfunc plat_crash_console_init
-
-	/* ---------------------------------------------
-	 * int plat_crash_console_putc(int c)
-	 * Function to print a character on the crash
-	 * console without a C Runtime.
-	 * Clobber list : x1, x2
-	 * ---------------------------------------------
-	 */
-func plat_crash_console_putc
-	mov_imm	x1, CRASH_CONSOLE_BASE
-	b	console_core_putc
-endfunc plat_crash_console_putc
 
 	/* ---------------------------------------------
 	 * void plat_report_exception(unsigned int type)

@@ -7,7 +7,6 @@
 #include <arch_helpers.h>
 #include <assert.h>
 #include <bl_common.h>
-#include <console.h>
 #include <debug.h>
 #include <desc_image_load.h>
 #include <dw_mmc.h>
@@ -20,6 +19,7 @@
 #ifdef SPD_opteed
 #include <optee_utils.h>
 #endif
+#include <pl011.h>
 #include <platform.h>
 #include <platform_def.h>	/* also includes hikey_def.h and hikey_layout.h*/
 #include <string.h>
@@ -277,8 +277,11 @@ static void hikey_jumper_init(void)
 void bl2_el3_early_platform_setup(u_register_t arg1, u_register_t arg2,
 				  u_register_t arg3, u_register_t arg4)
 {
+	static console_pl011_t console;
+
 	/* Initialize the console to provide early debug support */
-	console_init(CONSOLE_BASE, PL011_UART_CLK_IN_HZ, PL011_BAUDRATE);
+	console_pl011_register(CONSOLE_BASE, PL011_UART_CLK_IN_HZ,
+			       PL011_BAUDRATE, &console);
 	/*
 	 * Allow BL2 to see the whole Trusted RAM.
 	 */
