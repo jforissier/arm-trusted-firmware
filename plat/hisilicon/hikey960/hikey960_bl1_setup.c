@@ -7,7 +7,6 @@
 #include <arch_helpers.h>
 #include <assert.h>
 #include <bl_common.h>
-#include <console.h>
 #include <debug.h>
 #include <delay_timer.h>
 #include <dw_ufs.h>
@@ -17,6 +16,7 @@
 #include <hi3660.h>
 #include <interrupt_props.h>
 #include <mmio.h>
+#include <pl011.h>
 #include <platform.h>
 #include <platform_def.h>
 #include <string.h>
@@ -70,6 +70,7 @@ meminfo_t *bl1_plat_sec_mem_layout(void)
 void bl1_early_platform_setup(void)
 {
 	unsigned int id, uart_base;
+	static console_pl011_t console;
 
 	generic_delay_timer_init();
 	hikey960_read_boardid(&id);
@@ -78,7 +79,8 @@ void bl1_early_platform_setup(void)
 	else
 		uart_base = PL011_UART6_BASE;
 	/* Initialize the console to provide early debug support */
-	console_init(uart_base, PL011_UART_CLK_IN_HZ, PL011_BAUDRATE);
+	console_pl011_register(uart_base, PL011_UART_CLK_IN_HZ,
+			       PL011_BAUDRATE, &console);
 
 	/* Allow BL1 to see the whole Trusted RAM */
 	bl1_tzram_layout.total_base = BL1_RW_BASE;

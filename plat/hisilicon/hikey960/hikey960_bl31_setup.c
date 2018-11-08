@@ -17,6 +17,7 @@
 #include <hisi_ipc.h>
 #include <interrupt_mgmt.h>
 #include <interrupt_props.h>
+#include <pl011.h>
 #include <platform.h>
 #include <platform_def.h>
 
@@ -83,6 +84,7 @@ entry_point_info_t *bl31_plat_get_next_image_ep_info(uint32_t type)
 void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
 				u_register_t arg2, u_register_t arg3)
 {
+	static console_pl011_t console;
 	unsigned int id, uart_base;
 	void *from_bl2;
 
@@ -96,7 +98,8 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
 		uart_base = PL011_UART6_BASE;
 
 	/* Initialize the console to provide early debug support */
-	console_init(uart_base, PL011_UART_CLK_IN_HZ, PL011_BAUDRATE);
+	console_pl011_register(uart_base, PL011_UART_CLK_IN_HZ,
+			       PL011_BAUDRATE, &console);
 
 	/* Initialize CCI driver */
 	cci_init(CCI400_REG_BASE, cci_map, ARRAY_SIZE(cci_map));

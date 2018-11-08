@@ -7,13 +7,13 @@
 #include <arch_helpers.h>
 #include <assert.h>
 #include <cci.h>
-#include <console.h>
 #include <debug.h>
 #include <delay_timer.h>
 #include <gicv2.h>
 #include <hi3660.h>
 #include <hi3660_crg.h>
 #include <mmio.h>
+#include <pl011.h>
 #include <psci.h>
 #include "drivers/pwrc/hisi_pwrc.h"
 
@@ -256,6 +256,7 @@ hikey960_pwr_domain_suspend_finish(const psci_power_state_t *target_state)
 	unsigned int core = mpidr & MPIDR_CPU_MASK;
 	unsigned int cluster =
 		(mpidr & MPIDR_CLUSTER_MASK) >> MPIDR_AFFINITY_BITS;
+	static console_pl011_t console;
 
 	/* Nothing to be done on waking up from retention from CPU level */
 	if (CORE_PWR_STATE(target_state) != PLAT_MAX_OFF_STATE)
@@ -268,8 +269,8 @@ hikey960_pwr_domain_suspend_finish(const psci_power_state_t *target_state)
 	if (hisi_test_ap_suspend_flag(cluster)) {
 		hikey960_sr_dma_reinit();
 		gicv2_cpuif_enable();
-		console_init(uart_base, PL011_UART_CLK_IN_HZ,
-			     PL011_BAUDRATE);
+		console_pl011_register(uart_base, PL011_UART_CLK_IN_HZ,
+				       PL011_BAUDRATE, &console);
 	}
 
 	hikey960_pwr_domain_on_finish(target_state);
